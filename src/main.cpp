@@ -8,15 +8,19 @@
 int myFunction(int, int);
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  initializeSensors();  // Initialize the ultrasonic sensor
+  Serial.begin(9600);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-}
+  float distance = readUltrasonicSensor();
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  // Print the distance to the serial monitor
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+   
+    delay(1000);  // Adjust the delay as needed
 }
