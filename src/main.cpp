@@ -4,8 +4,6 @@
 //#include <motor_control.h>
 //#include <decisions.h>
 
-
-
 /*
 // Define motor control pins on the L298n Motor Driver
 const int motorA1 = 2; // Motor A input 1
@@ -21,6 +19,9 @@ UltrasonicSensor brSensor(brTrigPin, brEchoPin);
 UltrasonicSensor blSensor(blTrigPin, blEchoPin);
 
 void setup() {
+
+    pinMode(LED_BUILTIN, OUTPUT);
+
     // Initialize robot components here
     frSensor.initialize();  // Initialize the front-right sensor
     flSensor.initialize();  // Initialize the front-left sensor
@@ -31,14 +32,18 @@ void setup() {
 
 void loop() {
     // Robot's main control logic goes here
-    //
+    digitalWrite(LED_BUILTIN, HIGH); 
     //
     //
     // Read distances from the ultrasonic sensors
     float frDistance = frSensor.readDistance();
+    delay(10);
     float flDistance = flSensor.readDistance();
+    delay(10);
     float brDistance = brSensor.readDistance();
+    delay(10);
     float blDistance = blSensor.readDistance();
+    delay(10);
 
     // Print the distances to the serial monitor
     Serial.print("Front-Right Distance: ");
@@ -59,7 +64,7 @@ void loop() {
 
     // Add your robot's control logic here based on the distances
     // For example, implement collision avoidance using 'frDistance', 'flDistance', etc.
-    
+    digitalWrite(LED_BUILTIN, LOW);
     // Add any necessary delays or control logic for your robot's behavior
     delay(1000);  // Adjust the delay as needed
 }
