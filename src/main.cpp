@@ -1,26 +1,65 @@
 #include <Arduino.h>
 #include <config.h>
 #include <sensors.h>
-#include <motor_control.h>
-#include <decisions.h>
+//#include <motor_control.h>
+//#include <decisions.h>
 
-// put function declarations here:
-int myFunction(int, int);
+
+
+/*
+// Define motor control pins on the L298n Motor Driver
+const int motorA1 = 2; // Motor A input 1
+const int motorA2 = 3; // Motor A input 2
+const int motorB1 = 4; // Motor B input 1
+const int motorB2 = 5; // Motor B input 2
+*/
+
+// Create instances of the UltrasonicSensor class for each sensor
+UltrasonicSensor frSensor(frTrigPin, frEchoPin);
+UltrasonicSensor flSensor(flTrigPin, flEchoPin);
+UltrasonicSensor brSensor(brTrigPin, brEchoPin);
+UltrasonicSensor blSensor(blTrigPin, blEchoPin);
 
 void setup() {
-  initializeSensors();  // Initialize the ultrasonic sensor
-  Serial.begin(9600);
+    // Initialize robot components here
+    frSensor.initialize();  // Initialize the front-right sensor
+    flSensor.initialize();  // Initialize the front-left sensor
+    brSensor.initialize();  // Initialize the back-right sensor
+    blSensor.initialize();  // Initialize the back-left sensor
+    Serial.begin(9600);     // Initialize serial communication for debugging
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  float distance = readUltrasonicSensor();
+    // Robot's main control logic goes here
+    //
+    //
+    //
+    // Read distances from the ultrasonic sensors
+    float frDistance = frSensor.readDistance();
+    float flDistance = flSensor.readDistance();
+    float brDistance = brSensor.readDistance();
+    float blDistance = blSensor.readDistance();
 
-  // Print the distance to the serial monitor
-  Serial.print("Distance: ");
-  Serial.print(distance);
-  Serial.println(" cm");
+    // Print the distances to the serial monitor
+    Serial.print("Front-Right Distance: ");
+    Serial.print(frDistance);
+    Serial.println(" cm");
 
-   
+    Serial.print("Front-Left Distance: ");
+    Serial.print(flDistance);
+    Serial.println(" cm");
+
+    Serial.print("Back-Right Distance: ");
+    Serial.print(brDistance);
+    Serial.println(" cm");
+
+    Serial.print("Back-Left Distance: ");
+    Serial.print(blDistance);
+    Serial.println(" cm");
+
+    // Add your robot's control logic here based on the distances
+    // For example, implement collision avoidance using 'frDistance', 'flDistance', etc.
+    
+    // Add any necessary delays or control logic for your robot's behavior
     delay(1000);  // Adjust the delay as needed
 }

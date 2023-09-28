@@ -2,17 +2,26 @@
 #include "sensors.h"
 #include <Arduino.h>
 
-// Define the pins for the ultrasonic sensor
-const int trigPin = 0;  // Trig pin
-const int echoPin = 1;  // Echo pin
-
+/*
 void initializeSensors() {
+    // Initialize sensor pins
+    pinMode(trigPin, OUTPUT);
+    pinMode(echoPin, INPUT);
+} */
+
+//Constructor
+UltrasonicSensor::UltrasonicSensor(int trigPin, int echoPin) {
+    this->trigPin = trigPin;
+    this->echoPin = echoPin;
+}
+
+void UltrasonicSensor::initialize() {
     // Initialize sensor pins
     pinMode(trigPin, OUTPUT);
     pinMode(echoPin, INPUT);
 }
 
-float readUltrasonicSensor() {
+float UltrasonicSensor::readDistance() {
     // Trigger the ultrasonic sensor by sending a 10us pulse on the trigger pin
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
@@ -29,3 +38,8 @@ float readUltrasonicSensor() {
 
     return distance;
 }
+ /*
+float readMagnetometer() {
+    // Code to read data from the magnetometer
+    return distance;
+} */

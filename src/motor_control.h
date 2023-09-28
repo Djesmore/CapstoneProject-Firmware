@@ -2,10 +2,13 @@
 #ifndef MOTOR_CONTROL_H
 #define MOTOR_CONTROL_H
 
-void initializeMotors();
-void moveForward();
-void moveBackward();
-void turnLeft();
-void turnRight();
-
+class MotorController {
+public:
+    MotorController();
+    void initializeMotors();
+    void moveForward();
+    void moveBackward();
+    void turnLeft();
+    void turnRight();
+};
 #endif
