@@ -27,14 +27,14 @@ void setup() {
     flSensor.initialize();  // Initialize the front-left sensor
     brSensor.initialize();  // Initialize the back-right sensor
     blSensor.initialize();  // Initialize the back-left sensor
-    Serial.begin(9600);     // Initialize serial communication for debugging
+    Serial.begin(9600);     // Initialize serial communication
 }
 
 void loop() {
     // Robot's main control logic goes here
     digitalWrite(LED_BUILTIN, HIGH); 
-    //
-    //
+   
+
     // Read distances from the ultrasonic sensors
     float frDistance = frSensor.readDistance();
     delay(10);
@@ -62,9 +62,8 @@ void loop() {
     Serial.print(blDistance);
     Serial.println(" cm");
 
-    // Add your robot's control logic here based on the distances
-    // For example, implement collision avoidance using 'frDistance', 'flDistance', etc.
+    
     digitalWrite(LED_BUILTIN, LOW);
-    // Add any necessary delays or control logic for your robot's behavior
-    delay(1000);  // Adjust the delay as needed
+  
+    delay(1000);
 }
