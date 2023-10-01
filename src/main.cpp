@@ -26,6 +26,7 @@ void setup() {
 
     Serial.begin(9600);     // Initialize serial communication
 }
+
 /*
 void determineWorkArea(){
     // Record initial distances
@@ -78,8 +79,7 @@ void loop() {
     Serial.print("Back-Left Distance: ");
     Serial.print(blDistance);
     Serial.println(" cm");
-
-    
+  
     digitalWrite(LED_BUILTIN, LOW);
   
     delay(1000);
