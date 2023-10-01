@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <config.h>
-#include <sensors.h>
+#include <ultrasonic.h>
 #include <motor_control.h>
 //#include <decisions.h>
 
@@ -34,9 +34,6 @@ void determineWorkArea(){
     float brDistance = brSensor.readDistance();
     float blDistance = blSensor.readDistance();
     delay(10);
-
-
-
 }
 */
 

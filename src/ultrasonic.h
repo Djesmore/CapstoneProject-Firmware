@@ -1,10 +1,7 @@
 // sensors.h
-#ifndef SENSORS_H
-#define SENSORS_H
+#ifndef ULTRASONIC_H
+#define ULTRASONIC_H
 #include <Arduino.h>
-
-//void initializeSensors();
-float readMagnetometer();
 
 class UltrasonicSensor{
     public:

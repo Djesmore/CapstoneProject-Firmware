@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 //Constructor
-MotorControl::MotorControl(int enA, int in1, int in2, int enB, int in3, int in4){
+MotorControl::MotorControl(int enA, int in1, int in2, int enB, int in3, int in4) {
     this->enA = enA;
     this->in1 = in1;
     this->in2 = in2;

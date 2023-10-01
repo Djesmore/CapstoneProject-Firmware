@@ -1,5 +1,5 @@
 // sensors.cpp
-#include "sensors.h"
+#include "ultrasonic.h"
 #include <Arduino.h>
 
 //Constructor
@@ -30,8 +30,3 @@ float UltrasonicSensor::readDistance() {
     long distance = (duration * 0.034 / 2);
     return distance;
 }
- /*
-float readMagnetometer() {
-    // Code to read data from the magnetometer
-    return distance;
-} */

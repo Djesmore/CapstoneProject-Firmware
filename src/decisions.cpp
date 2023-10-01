@@ -1,7 +1,8 @@
 // decision.cpp
 #include "decisions.h"
-#include "sensors.h"
+#include "ultrasonic.h"
 #include "motor_control.h"
+#include "magnetometer.h"
 
 void makeDecision() {
     // Code to process sensor data and make decisions
