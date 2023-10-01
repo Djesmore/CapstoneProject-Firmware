@@ -1,75 +1,80 @@
-/*
-// motor_control.cpp
+
+//motor_control.cpp
 #include "motor_control.h"
-#include <Arduino.h> 
+#include <Arduino.h>
 
-// Define pin numbers for the motor control and encoder connections
-const int MOTOR_PWM_PIN = 9; 
-const int MOTOR_DIRECTION_PIN = 8; 
-const int ENCODER_A_PIN = 2; 
-const int ENCODER_B_PIN = 3; 
-
-// Define encoder variables
-volatile long encoderCount = 0;
-volatile bool encoderAState = 0;
-volatile bool encoderBState = 0;
-
-MotorController::MotorController() {
-    // Constructor
+//Constructor
+MotorControl::MotorControl(int enA, int in1, int in2, int enB, int in3, int in4){
+    this->enA = enA;
+    this->in1 = in1;
+    this->in2 = in2;
+    this->enB = enB;
+    this->in3 = in3;
+    this->in4 = in4;
 }
 
-void MotorController::initializeMotors() {
-    // Initialize motor pins
-    pinMode(MOTOR_PWM_PIN, OUTPUT);
-    pinMode(MOTOR_DIRECTION_PIN, OUTPUT);
-
-    // Initialize encoder pins
-    pinMode(ENCODER_A_PIN, INPUT_PULLUP);
-    pinMode(ENCODER_B_PIN, INPUT_PULLUP);
-
-    // Attach interrupts for encoder reading
-    attachInterrupt(digitalPinToInterrupt(ENCODER_A_PIN), updateEncoder, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ENCODER_B_PIN), updateEncoder, CHANGE);
+void MotorControl::initializeMotors() {
+    // Set all the motor control pins to outputs
+	pinMode(enA, OUTPUT);
+	pinMode(enB, OUTPUT);
+	pinMode(in1, OUTPUT);
+	pinMode(in2, OUTPUT);
+	pinMode(in3, OUTPUT);
+	pinMode(in4, OUTPUT);
+	
+	// Turn off motors - Initial state
+	digitalWrite(in1, LOW);
+	digitalWrite(in2, LOW);
+	digitalWrite(in3, LOW);
+	digitalWrite(in4, LOW);
 }
 
-void MotorController::moveForward() {
-    // Code to move the robot forward
-    digitalWrite(MOTOR_DIRECTION_PIN, HIGH); // Set direction forward
-    analogWrite(MOTOR_PWM_PIN, 255); // Set motor speed (0-255)
+void MotorControl::moveForward() {
+    analogWrite(enA, 255); // Set PWM
+    analogWrite(enB, 255); // Set PWM
+
+    digitalWrite(in1, HIGH);
+	digitalWrite(in2, LOW);
+	digitalWrite(in3, HIGH);
+	digitalWrite(in4, LOW);
 }
 
-void MotorController::moveBackward() {
-    // Code to move the robot backward
-    digitalWrite(MOTOR_DIRECTION_PIN, LOW); // Set direction backward
-    analogWrite(MOTOR_PWM_PIN, 255); // Set motor speed (0-255)
+void MotorControl::moveBackward() {
+    analogWrite(enA, 255);
+    analogWrite(enB, 255);
+
+    digitalWrite(in1, LOW);
+	digitalWrite(in2, HIGH);
+	digitalWrite(in3, LOW);
+	digitalWrite(in4, HIGH);
 }
 
-void MotorController::turnLeft() {
-    // Code to turn the robot left
-    // Implement motor control logic for turning left
+void MotorControl::turnLeft() {
+    analogWrite(enA, 255);
+    analogWrite(enB, 255);
+
+    digitalWrite(in1, LOW);
+	digitalWrite(in2, HIGH);
+	digitalWrite(in3, HIGH);
+	digitalWrite(in4, LOW);
 }
 
-void MotorController::turnRight() {
-    // Code to turn the robot right
-    // Implement motor control logic for turning right
+void MotorControl::turnRight() {
+    analogWrite(enA, 255);
+    analogWrite(enB, 255);
+
+    digitalWrite(in1, HIGH);
+	digitalWrite(in2, LOW);
+	digitalWrite(in3, LOW);
+	digitalWrite(in4, HIGH);
 }
 
-void MotorController::updateEncoder() {
-    // Update encoder count based on A and B phase signals
-    encoderAState = digitalRead(ENCODER_A_PIN);
-    encoderBState = digitalRead(ENCODER_B_PIN);
+void MotorControl::fullStop() {
+    analogWrite(enA, 255);
+    analogWrite(enB, 255);
 
-    if (encoderAState == HIGH) {
-        if (encoderBState == LOW) {
-            encoderCount++;
-        } else {
-            encoderCount--;
-        }
-    } else {
-        if (encoderBState == HIGH) {
-            encoderCount++;
-        } else {
-            encoderCount--;
-        }
-    }
-} */
+    digitalWrite(in1, LOW);
+	digitalWrite(in2, LOW);
+	digitalWrite(in3, LOW);
+	digitalWrite(in4, LOW);
+}

@@ -14,4 +14,15 @@ const int brEchoPin = 17;  // Back-right sensor Echo pin
 const int blTrigPin = 14;  // Back-left sensor Trig pin
 const int blEchoPin = 15;  // Back-left sensor Echo pin
 
+
+// Drive Motor A
+int enA = 20; //PWM
+int in1 = 19; //+++
+int in2 = 18; //---
+
+// Drive Motor B
+int enB = 4; //PWM
+int in3 = 2; //+++
+int in4 = 3; //---
+
 #endif

@@ -2,13 +2,6 @@
 #include "sensors.h"
 #include <Arduino.h>
 
-/*
-void initializeSensors() {
-    // Initialize sensor pins
-    pinMode(trigPin, OUTPUT);
-    pinMode(echoPin, INPUT);
-} */
-
 //Constructor
 UltrasonicSensor::UltrasonicSensor(int trigPin, int echoPin) {
     this->trigPin = trigPin;
