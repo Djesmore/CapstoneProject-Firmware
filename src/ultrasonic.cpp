@@ -1,5 +1,5 @@
 // sensors.cpp
-#include "sensors.h"
+#include "ultrasonic.h"
 #include <Arduino.h>
 
 //Constructor
@@ -26,12 +26,8 @@ float UltrasonicSensor::readDistance() {
     long duration = pulseIn(echoPin, HIGH);
 
     // Calculate the distance in centimeters
-    // Speed of sound is approximately 343 m/s or 34,300 cm/s
+    // Speed of sound is 343 m/s or 34,300 cm/s
     long distance = (duration * 0.034 / 2);
+    
     return distance;
 }
- /*
-float readMagnetometer() {
-    // Code to read data from the magnetometer
-    return distance;
-} */

@@ -16,13 +16,18 @@ const int blEchoPin = 15;  // Back-left sensor Echo pin
 
 
 // Drive Motor A
-int enA = 20; //PWM
-int in1 = 19; //+++
-int in2 = 18; //---
+const int enA = 20; //PWM
+const int in1 = 19; //+++
+const int in2 = 18; //---
 
 // Drive Motor B
-int enB = 4; //PWM
-int in3 = 2; //+++
-int in4 = 3; //---
+const int enB = 4; //PWM
+const int in3 = 2; //+++
+const int in4 = 3; //---
+
+// Leadscrew
+const int lsenA = 98; //PWM
+const int lsin1 = 99; //+++ 
+const int lsin2 = 97; //---
 
 #endif
