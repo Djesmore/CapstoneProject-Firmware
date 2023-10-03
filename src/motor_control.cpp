@@ -14,6 +14,7 @@ MotorControl::MotorControl(int enA, int in1, int in2, int enB, int in3, int in4,
     this->in3 = in3;
     this->in4 = in4;
 	//Leadscrew
+	  
 	this->lsenA = lsenA;
 	this->lsin1 = lsin1;
 	this->lsin2 = lsin2;

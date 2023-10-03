@@ -3,9 +3,9 @@
 #include <Arduino.h>
 #include <HMC5883L.h>
 
-HMC5883L compass;
-
+//HMC5883L compass;
+/*
 int readCompass(){
 
-}
-#endif
+}*/
+#endif 

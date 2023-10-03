@@ -2,6 +2,7 @@
 #include <config.h>
 #include <ultrasonic.h>
 #include <motor_control.h>
+#include <magnetometer.h>
 //#include <decisions.h>
 
 //Create instances of the UltrasonicSensor class for each sensor
@@ -26,7 +27,7 @@ void setup() {
 
     Serial.begin(9600);     //Initialize serial communication
 }
-
+/*
 void determineWorkArea(){
     //Record initial distances
     float frDistance = frSensor.readDistance();
@@ -35,20 +36,20 @@ void determineWorkArea(){
     float blDistance = blSensor.readDistance();
     delay(10);
 }
-
+*/
 void loop() {
     //Robot's main control logic goes here
 
     //Turn on Pico's Onboard LED
     digitalWrite(LED_BUILTIN, HIGH); 
 
-    //mtrctrl.moveForward();
+    mtrctrl.moveForward();
     delay(1000); 
-    //mtrctrl.moveBackward();
+    mtrctrl.moveBackward();
     delay(1000);
-    //mtrctrl.turnLeft();
+    mtrctrl.turnLeft();
     delay(1000);
-    //mtrctrl.turnRight();
+    mtrctrl.turnRight();
     delay(1000);
     mtrctrl.fullStop();
 
