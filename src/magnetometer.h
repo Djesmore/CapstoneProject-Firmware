@@ -3,9 +3,18 @@
 #include <Arduino.h>
 #include <HMC5883L.h>
 
-//HMC5883L compass;
-/*
-int readCompass(){
+class Magnetometer {
+public:
+  Magnetometer();
+  void begin();
+  void loop();
+  
+private:
+  HMC5883L compass;
+  int error;
+  float declinationAngle;
+  
+  void Output(MagnetometerRaw raw, MagnetometerScaled scaled, float heading, float headingDegrees);
+};
 
-}*/
-#endif 
+#endif

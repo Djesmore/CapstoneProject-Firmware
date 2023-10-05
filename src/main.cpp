@@ -1,9 +1,12 @@
 #include <Arduino.h>
+#include <magnetometer.h>
 #include <config.h>
 #include <ultrasonic.h>
 #include <motor_control.h>
-#include <magnetometer.h>
+#include <wire.h>
 //#include <decisions.h>
+
+Magnetometer magnetometer;
 
 //Create instances of the UltrasonicSensor class for each sensor
 UltrasonicSensor frSensor(frTrigPin, frEchoPin);
@@ -17,6 +20,8 @@ MotorControl mtrctrl(enA, in1, in2, enB, in3, in4, lsenA, lsin1, lsin2);
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
 
+    magnetometer.begin();
+
     //Initialize robot components here
     frSensor.initialize();  //Initialize the front-right sensor
     flSensor.initialize();  //Initialize the front-left sensor
@@ -25,6 +30,8 @@ void setup() {
 
     mtrctrl.initializeMotors(); //Initialize drive motors
 
+    Wire.begin();
+    
     Serial.begin(9600);     //Initialize serial communication
 }
 /*
@@ -42,6 +49,8 @@ void loop() {
 
     //Turn on Pico's Onboard LED
     digitalWrite(LED_BUILTIN, HIGH); 
+
+    magnetometer.loop();
 
     mtrctrl.moveForward();
     delay(1000); 
