@@ -6,13 +6,13 @@
 #include <wire.h>
 //#include <decisions.h>
 
-Magnetometer magnetometer;
+//Magnetometer magnetometer;
 
 //Create instances of the UltrasonicSensor class for each sensor
-UltrasonicSensor frSensor(frTrigPin, frEchoPin);
-UltrasonicSensor flSensor(flTrigPin, flEchoPin);
-UltrasonicSensor brSensor(brTrigPin, brEchoPin);
-UltrasonicSensor blSensor(blTrigPin, blEchoPin);
+UltrasonicSensor frontSensor(frontTrigPin, frontEchoPin);
+UltrasonicSensor leftSensor(leftTrigPin, leftEchoPin);
+UltrasonicSensor rightSensor(rightTrigPin, rightEchoPin);
+UltrasonicSensor backSensor(backTrigPin, backEchoPin);
 
 //Create instance of the MotorControl class
 MotorControl mtrctrl(enA, in1, in2, enB, in3, in4, lsenA, lsin1, lsin2);
@@ -20,21 +20,22 @@ MotorControl mtrctrl(enA, in1, in2, enB, in3, in4, lsenA, lsin1, lsin2);
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
 
-    magnetometer.begin();
-
     //Initialize robot components here
-    frSensor.initialize();  //Initialize the front-right sensor
-    flSensor.initialize();  //Initialize the front-left sensor
-    brSensor.initialize();  //Initialize the back-right sensor
-    blSensor.initialize();  //Initialize the back-left sensor
+
+    frontSensor.initialize();  //Initialize the front-right sensor
+    leftSensor.initialize();  //Initialize the front-left sensor
+    rightSensor.initialize();  //Initialize the back-right sensor
+    backSensor.initialize();  //Initialize the back-left sensor
 
     mtrctrl.initializeMotors(); //Initialize drive motors
+
+ // magnetometer.begin();
 
     Wire.begin();
     
     Serial.begin(9600);     //Initialize serial communication
 }
-
+/*
 void determineWorkArea(){
     //Record initial distances
     float frDistance = frSensor.readDistance();
@@ -43,52 +44,55 @@ void determineWorkArea(){
     float blDistance = blSensor.readDistance();
     delay(10);
 }
-
+*/
 void loop() {
     //Robot's main control logic goes here
 
     //Turn on Pico's Onboard LED
-    digitalWrite(LED_BUILTIN, HIGH); 
+    digitalWrite(LED_BUILTIN, LOW); 
 
-    magnetometer.loop();
+    //magnetometer.loop();
 
-    //mtrctrl.moveForward();
-    delay(1000); 
-    //mtrctrl.moveBackward();
-    delay(1000);
-    //mtrctrl.turnLeft();
-    delay(1000);
-    //mtrctrl.turnRight();
-    delay(1000);
     mtrctrl.fullStop();
+    delay(5000);
+    mtrctrl.moveForward();
+    delay(5000); 
+    mtrctrl.fullStop();
+    delay(3000);
 
+    mtrctrl.moveBackward();
+    delay(4000);
+    mtrctrl.fullStop();
+    delay(1000);
+    
+/*
     //Read distances from the ultrasonic sensors
-    float frDistance = frSensor.readDistance();
+    float frontDistance = frontSensor.readDistance();
     delay(10);
-    float flDistance = flSensor.readDistance();
+    float leftDistance = leftSensor.readDistance();
     delay(10);
-    float brDistance = brSensor.readDistance();
+    float rightDistance = rightSensor.readDistance();
     delay(10);
-    float blDistance = blSensor.readDistance();
+    float backDistance = backSensor.readDistance();
     delay(10);
 
     //Print the distances to the serial monitor
-    Serial.print("Front-Right Distance: ");
-    Serial.print(frDistance);
+    Serial.print("Front Distance: ");
+    Serial.print(frontDistance);
     Serial.println(" cm");
 
-    Serial.print("Front-Left Distance: ");
-    Serial.print(flDistance);
+    Serial.print("Left Distance: ");
+    Serial.print(leftDistance);
     Serial.println(" cm");
 
-    Serial.print("Back-Right Distance: ");
-    Serial.print(brDistance);
+    Serial.print("Right Distance: ");
+    Serial.print(rightDistance);
     Serial.println(" cm");
 
-    Serial.print("Back-Left Distance: ");
-    Serial.print(blDistance);
+    Serial.print("Back Distance: ");
+    Serial.print(backDistance);
     Serial.println(" cm");
-  
+*/
     //Turn off Pico's Onboard LED
     digitalWrite(LED_BUILTIN, LOW);
   

@@ -5,25 +5,25 @@
 // Define other pins, constants, and settings here
 
 // Define the pins for the four ultrasonic sensors
-const int frTrigPin = 28;  // Front-right sensor Trig pin
-const int frEchoPin = 27;  // Front-right sensor Echo pin
-const int flTrigPin = 0;  // Front-left sensor Trig pin
-const int flEchoPin = 1;  // Front-left sensor Echo pin
-const int brTrigPin = 16;  // Back-right sensor Trig pin
-const int brEchoPin = 17;  // Back-right sensor Echo pin
-const int blTrigPin = 14;  // Back-left sensor Trig pin
-const int blEchoPin = 15;  // Back-left sensor Echo pin
+const int frontTrigPin = 52;  // Front sensor Trig pin
+const int frontEchoPin = 53;  // Front sensor Echo pin
+const int leftTrigPin = 50;  // Left sensor Trig pin
+const int leftEchoPin = 51;  // Left sensor Echo pin
+const int rightTrigPin = 22;  // Right sensor Trig pin
+const int rightEchoPin = 23;  // Right sensor Echo pin
+const int backTrigPin = 26;  // Back sensor Trig pin
+const int backEchoPin = 27;  // Back sensor Echo pin
 
 
 // Drive Motor A
-const int enA = 20; //PWM
-const int in1 = 19; //+++
-const int in2 = 18; //---
+const int enA = 8; //PWM 20
+const int in1 = 9; //+++ 19 
+const int in2 = 10; //--- 18
 
 // Drive Motor B
-const int enB = 4; //PWM
-const int in3 = 2; //+++
-const int in4 = 3; //---
+const int enB = 13; //PWM 4
+const int in3 = 11; //+++2
+const int in4 = 12; //---3
 
 // Leadscrew
 const int lsenA = 98; //PWM
