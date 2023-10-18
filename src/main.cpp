@@ -56,16 +56,18 @@ void loop() {
     mtrctrl.fullStop();
     delay(5000);
     mtrctrl.moveForward();
+    Serial.println("Motors Forward");
     delay(5000); 
     mtrctrl.fullStop();
+
     delay(3000);
 
     mtrctrl.moveBackward();
+    Serial.println("Motors Backwards");
     delay(4000);
     mtrctrl.fullStop();
     delay(1000);
-    
-/*
+
     //Read distances from the ultrasonic sensors
     float frontDistance = frontSensor.readDistance();
     delay(10);
@@ -92,9 +94,11 @@ void loop() {
     Serial.print("Back Distance: ");
     Serial.print(backDistance);
     Serial.println(" cm");
-*/
+
     //Turn off Pico's Onboard LED
     digitalWrite(LED_BUILTIN, LOW);
   
+    delay(1000);
+    delay(1000);
     delay(1000);
 }

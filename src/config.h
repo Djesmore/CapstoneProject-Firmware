@@ -5,15 +5,14 @@
 // Define other pins, constants, and settings here
 
 // Define the pins for the four ultrasonic sensors
-const int frontTrigPin = 52;  // Front sensor Trig pin
-const int frontEchoPin = 53;  // Front sensor Echo pin
-const int leftTrigPin = 50;  // Left sensor Trig pin
-const int leftEchoPin = 51;  // Left sensor Echo pin
-const int rightTrigPin = 22;  // Right sensor Trig pin
-const int rightEchoPin = 23;  // Right sensor Echo pin
-const int backTrigPin = 26;  // Back sensor Trig pin
-const int backEchoPin = 27;  // Back sensor Echo pin
-
+const int frontTrigPin = 50;  // Front sensor Trig pin BLACK
+const int frontEchoPin = 51;  // Front sensor Echo pin BLACK
+const int leftTrigPin = 24;  // Left sensor Trig pin PINK
+const int leftEchoPin = 25;  // Left sensor Echo pin PINK
+const int rightTrigPin = 53;  // Right sensor Trig pin GREEN
+const int rightEchoPin = 52;  // Right sensor Echo pin GREEN
+const int backTrigPin = 22;  // Back sensor Trig pin PURPLE
+const int backEchoPin = 23;  // Back sensor Echo pin PURPLE
 
 // Drive Motor A
 const int enA = 8; //PWM 20

@@ -17,9 +17,9 @@ void UltrasonicSensor::initialize() {
 float UltrasonicSensor::readDistance() {
     // Trigger the ultrasonic sensor by sending a 10us pulse on the trigger pin
     digitalWrite(trigPin, LOW);
-    delayMicroseconds(10);
+    delayMicroseconds(20);
     digitalWrite(trigPin, HIGH);
-    delayMicroseconds(40);
+    delayMicroseconds(20);
     digitalWrite(trigPin, LOW);
 
     // Read the echo pulse duration in microseconds
@@ -28,6 +28,6 @@ float UltrasonicSensor::readDistance() {
     // Calculate the distance in centimeters
     // Speed of sound is 343 m/s or 34,300 cm/s
     long distance = (duration * 0.034 / 2);
-    
+    delayMicroseconds(30);
     return distance;
 }
