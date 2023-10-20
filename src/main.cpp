@@ -1,12 +1,13 @@
 #include <Arduino.h>
-#include <magnetometer.h>
+#include <compass.h>
 #include <config.h>
 #include <ultrasonic.h>
 #include <motor_control.h>
 #include <wire.h>
 //#include <decisions.h>
 
-//Magnetometer magnetometer;
+//Create instance of Compass Class
+Compass compass;
 
 //Create instances of the UltrasonicSensor class for each sensor
 UltrasonicSensor frontSensor(frontTrigPin, frontEchoPin);
@@ -19,6 +20,7 @@ MotorControl mtrctrl(enA, in1, in2, enB, in3, in4, lsenA, lsin1, lsin2);
 
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
+    Serial.begin(9600);     //Initialize serial communication
 
     //Initialize robot components here
 
@@ -29,11 +31,9 @@ void setup() {
 
     mtrctrl.initializeMotors(); //Initialize drive motors
 
- // magnetometer.begin();
+    compass.initializeCompass(); //Initialize compass
 
     Wire.begin();
-    
-    Serial.begin(9600);     //Initialize serial communication
 }
 /*
 void determineWorkArea(){
@@ -51,8 +51,18 @@ void loop() {
     //Turn on Pico's Onboard LED
     digitalWrite(LED_BUILTIN, LOW); 
 
-    //magnetometer.loop();
+    //*********************** Compass
+    int x, y, z;
+    compass.readCompass(x, y, z);
 
+    Serial.print("x: ");
+    Serial.println(x);
+    Serial.print("y: ");
+    Serial.println(y);
+    Serial.print("z: ");
+    Serial.println(z);
+
+    //********************** Drive Motors
     mtrctrl.fullStop();
     delay(5000);
     mtrctrl.moveForward();
@@ -67,7 +77,8 @@ void loop() {
     delay(4000);
     mtrctrl.fullStop();
     delay(1000);
-
+    
+    //********************** Ultrasonic Sensors
     //Read distances from the ultrasonic sensors
     float frontDistance = frontSensor.readDistance();
     delay(10);
@@ -102,3 +113,4 @@ void loop() {
     delay(1000);
     delay(1000);
 }
+

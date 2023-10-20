@@ -2,7 +2,7 @@
 #include "decisions.h"
 #include "ultrasonic.h"
 #include "motor_control.h"
-#include "magnetometer.h"
+#include "compass.h"
 
 void makeDecision() {
     // Code to process sensor data and make decisions
