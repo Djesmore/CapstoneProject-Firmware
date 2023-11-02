@@ -1,5 +1,5 @@
 #include "compass.h"
-
+/*
 //Constructor
 Compass::Compass(uint8_t address) : deviceAddress(address){}
 
@@ -27,3 +27,4 @@ void Compass::readCompass(int &x, int &y, int &z){
       z |= Wire.read(); //Z lsb
   }
 }
+*/

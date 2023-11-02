@@ -2,8 +2,8 @@
 #define COMPASS_H
 #include <Arduino.h>
 #include <Wire.h>
-#include <HMC5883L.h>
-
+//#include <HMC5883L.h>
+/*
 class Compass{
     public:
         Compass(uint8_t address = 0x1E);
@@ -16,5 +16,5 @@ class Compass{
         //Compass Variabless
         uint8_t deviceAddress;
 };
-
+*/
 #endif
