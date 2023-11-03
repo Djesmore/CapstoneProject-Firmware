@@ -43,7 +43,7 @@ void MotorControl::initializeMotors() {
 }
 
 void MotorControl::moveForward() {
-    analogWrite(enA, 255); // Set PWM **Speed is 23.37cm/s
+    analogWrite(enA, 245); // Set PWM **Speed is 23.37cm/s
     analogWrite(enB, 255); // Set PWM **Speed is 23.37cm/s
 
     digitalWrite(in1, HIGH);

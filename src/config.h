@@ -4,6 +4,9 @@
 
 // Define other pins, constants, and settings here
 
+//Speed of Robot (SoR)
+const float sor = 23.37;
+
 // Define the pins for the four ultrasonic sensors
 const int frontTrigPin = 50;  // Front sensor Trig pin BLACK
 const int frontEchoPin = 51;  // Front sensor Echo pin BLACK

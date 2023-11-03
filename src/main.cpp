@@ -58,24 +58,11 @@ Serial.print("test6");
     Serial.print("compass samples is:");
     Serial.println(compass.getSamples());
 */
-    delay(1000);
-  }
-
-
-
-/*
-void determineWorkArea(){
-    //Record initial distances
-    float frDistance = frSensor.readDistance();
-    float flDistance = flSensor.readDistance();
-    float brDistance = brSensor.readDistance();
-    float blDistance = blSensor.readDistance();
-    delay(10);
+    delay(3000);
 }
-*/
-void loop() {
-    //Robot's main control logic goes here
 
+void demoMode(){
+    
     //Turn on Pico's Onboard LED
     digitalWrite(LED_BUILTIN, LOW); 
 
@@ -163,5 +150,34 @@ void loop() {
     delay(1000);
     delay(1000); 
     delay(1000);
+}
+
+
+void loop() {
+    //Robot's main control logic goes here
+
+    //Read Distance and Drive to Distance
+
+    Serial.println("Reading front distance...");
+    float frontDistance = frontSensor.readDistance();
+
+    //Divide frontDistance by Speed of Robot (SOR), 23.37cm/s
+    float travelTime = frontDistance / sor;
+    float calTravelTime = (travelTime * 1000) - 250; // timing adjustment, arrive just before distance
+
+    Serial.print(" Travel Distance: ");
+    Serial.println(frontDistance);
+
+    Serial.print(" Travel Time: ");
+    Serial.println(calTravelTime);
+
+    if (frontDistance < 500){
+    mtrctrl.moveForward();
+    delay(calTravelTime);
+    mtrctrl.fullStop();
+    }else{
+        Serial.print("Distance too Far!");
+    }
+    delay(5000);
 }
 
