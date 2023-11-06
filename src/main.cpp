@@ -5,7 +5,7 @@
 #include <motor_control.h>
 #include <wire.h>
 #include <DFRobot_QMC5883.h>
-//#include <decisions.h>
+#include <decisions.h>
 
 //Robot speed is 23.37cm/s on carpet
 
@@ -22,6 +22,163 @@ UltrasonicSensor backSensor(backTrigPin, backEchoPin);
 //Create instance of the MotorControl class
 MotorControl mtrctrl(enA, in1, in2, enB, in3, in4, lsenA, lsin1, lsin2);
 
+// Create an instance of the Decisions class
+Decisions decision(frontSensor, 25.0); // Adjust the obstacle threshold as needed
+
+float preMeasurements(float, float, float);
+
+float initFrontDist = 0;  // Variable to store the initial front distance
+float initLeftDist = 0;   // Variable to store the initial left distance
+float calTravelTime; // Variable to store the calibrated travel time
+float initFrntMeasureFlag = 0; // Initial Front measurement flag
+float initLeftMeasureFlag = 0; // Initial Left measurement flag
+
+bool travelMode = true;     // Initially in travel mode
+unsigned long startTime = 0; // Variable to store the start time
+unsigned long elapsedTime = 0; // Variable to store the elapsed time
+
+
+float preMeasurements(float initFrontDist, float initLeftDist, float calTravelTime){
+
+    for(int i = 0; i < 5; i++){
+        initFrontDist = frontSensor.readDistance();
+        initLeftDist = leftSensor.readDistance();
+    }
+    Serial.println("Starting Initial Measurements...");
+    Serial.print("Test front distance: ");
+    Serial.println(initFrontDist);
+    Serial.print("Test left distance: ");
+    Serial.println(initLeftDist);
+
+//************FRONT SENSOR***************************************************************************
+
+    //Read Front Distance and check to see if measurements were good
+    Serial.println("Reading Front distance...");
+    initFrontDist = frontSensor.readDistance();
+    delay(500);
+    float testDist1 = frontSensor.readDistance();
+    
+    if (initFrontDist < 30) // If initial front distance is less than 30cm, set error flag to 1
+    {
+        initFrntMeasureFlag = 1;
+        Serial.print("Front Measurement less than 30cm!");
+    }
+    if (initFrontDist > 500) // If initial front distance is greater than 500cm, set error flag to 1
+    {
+        initFrntMeasureFlag = 1;
+        Serial.println("Front Measurement more than 500cm!");
+    }
+/*
+    if (initFrontDist - testDist1 < 10) // If initial front distance is not within 5cm of the test distance, set flag, bad data
+    {
+        initFrntMeasureFlag = 1;
+        Serial.println("Front Measurement does not match test");
+    }
+*/
+    while (initFrntMeasureFlag == 1){
+        
+        Serial.println("Error with front measurement, retaking measurements now...");
+        float testFlag1 = 0;
+
+        initFrontDist = frontSensor.readDistance();
+        delay(500);
+        float testDist2 = frontSensor.readDistance();
+        
+        while (testFlag1 == 0){
+            if (initFrontDist < 30) // If initial front distance is less than 30cm, set error flag to 1
+            {
+                testFlag1 = 1;
+                Serial.println("New Front Measurement less than 30cm!");
+            }
+            if (initFrontDist > 500) // If initial front distance is greater than 500cm, set error flag to 1
+            {
+                testFlag1 = 1;
+                Serial.println("New Front Measurement more than 500cm!");
+            }
+        }
+/*
+        // Compares new measurement with a test value, to ensure we have a good value. 
+        // If the 2 measurements are within 5cm, clear flag
+        if (initFrontDist - testDist2 < 10)
+        {
+            initFrntMeasureFlag = 0;
+            Serial.println("New Front Measurement did not match test measurement");
+        }
+*/
+    }
+
+    //************LEFT SENSOR***************************************************************************
+/*
+    //Read Left Distance and check to see if measurements were good
+    Serial.println("Reading Left distance...");
+    initLeftDist = leftSensor.readDistance();
+    float testDist3 = leftSensor.readDistance();
+    
+    if (initLeftDist < 30) // If initial Left distance is less than 30cm, set error flag to 1
+    {
+        initLeftMeasureFlag = 1;
+        Serial.print("Left Measurement less than 30cm!");
+    }
+    if (initLeftDist > 500) // If initial Left distance is greater than 500cm, set error flag to 1
+    {
+        initLeftMeasureFlag = 1;
+        Serial.print("Left Measurement more than 500cm!");
+    }
+    if (initLeftDist - testDist3 < 5) // If initial Left distance is not within 5cm of the test distance, set flag to 1, bad data
+    {
+        initLeftMeasureFlag = 1;
+        Serial.print("Left Measurement did not match test measurement");
+    }
+
+    while (initLeftMeasureFlag == 1){
+        
+        Serial.print("Error with left measurement, retaking measurements now...");
+        float testFlag2 = 0;
+
+        initLeftDist = leftSensor.readDistance();
+        delay(500);
+        float testDist4 = leftSensor.readDistance();
+        
+        while (testFlag2 == 0){
+            if (initLeftDist < 30) // If initial left distance is less than 30cm, set error flag to 1
+            {
+                testFlag2 = 1;
+                Serial.print("New Left Measurement less than 30cm!");
+            }
+            if (initLeftDist > 500) // If initial left distance is greater than 500cm, set error flag to 1
+            {
+                testFlag2 = 1;
+                Serial.print("New Left Measurement more than 500cm!");
+            }
+        }
+
+        // Compares new measurement with a test value, to ensure we have a good value. 
+        // If the 2 measurements are within 5cm, clear flag
+        if (initFrontDist - testDist4 < 5)
+        {
+            initLeftMeasureFlag = 0;
+            Serial.print("New Left Measurement did not match test");
+        }
+    }
+*/
+//*****************************************************************************************************
+    //Divide frontDistance by Speed of Robot (SOR), 23.37cm/s
+    float travelTime = initFrontDist / sor;
+    calTravelTime = (travelTime * 1000) - 250; // timing adjustment, arrive just before distance
+
+    Serial.println("Initial Measurements: Good");
+
+    //Print travel distance and time
+    Serial.print(" Travel Distance: ");
+    Serial.println(initFrontDist);
+    Serial.print(" Travel Time: ");
+    Serial.println(travelTime);
+
+    //Return initial front and left distances
+    //Return calibrated travel time
+    return initFrontDist, initLeftDist, calTravelTime;
+}
+
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(9600);     //Initialize serial communication
@@ -35,6 +192,8 @@ void setup() {
 
     mtrctrl.initializeMotors(); //Initialize drive motors
     Serial.println("Initializing Drive Motors");
+
+    preMeasurements(initFrontDist, initLeftDist, calTravelTime); //determine initial measurements
 
     //compass.initializeCompass(); //Initialize compass
 /*
@@ -152,32 +311,65 @@ void demoMode(){
     delay(1000);
 }
 
-
 void loop() {
     //Robot's main control logic goes here
 
-    //Read Distance and Drive to Distance
+    //Obstacle Avoidance
+    bool obstacleDetected = decision.avoidObstacle();
 
-    Serial.println("Reading front distance...");
-    float frontDistance = frontSensor.readDistance();
+    if (obstacleDetected == false){
 
-    //Divide frontDistance by Speed of Robot (SOR), 23.37cm/s
-    float travelTime = frontDistance / sor;
-    float calTravelTime = (travelTime * 1000) - 250; // timing adjustment, arrive just before distance
-
-    Serial.print(" Travel Distance: ");
-    Serial.println(frontDistance);
-
-    Serial.print(" Travel Time: ");
-    Serial.println(calTravelTime);
-
-    if (frontDistance < 500){
-    mtrctrl.moveForward();
-    delay(calTravelTime);
-    mtrctrl.fullStop();
-    }else{
-        Serial.print("Distance too Far!");
+        travelMode = true;
     }
+    if (obstacleDetected == true){
+        travelMode = false;
+    }
+
+    while (travelMode == true){
+
+        Serial.println("Moving Forward!");
+
+        obstacleDetected = decision.avoidObstacle();
+
+        if (startTime == 0) {
+            // Set the start time when starting the travel
+            startTime = millis();
+        }
+
+        mtrctrl.moveForward();
+
+        // Calculate elapsed time
+        elapsedTime = millis() - startTime;
+
+        Serial.print("Elapsed Time: ");
+        Serial.println(elapsedTime);
+
+         if (elapsedTime >= calTravelTime) {
+            mtrctrl.fullStop();
+            startTime = 0; // Reset the start time
+            Serial.println("Reached the end!");
+            } else {
+                mtrctrl.moveForward();
+                Serial.println("Still Moving!");
+            }
+    }
+
+    while (travelMode == false){
+        mtrctrl.fullStop();
+        Serial.println("Obstacle in the way...");
+
+        obstacleDetected = decision.avoidObstacle();
+
+        if (!obstacleDetected) {
+            // Switch back to travel mode
+            travelMode = true;
+            Serial.println("Obstacle Cleared. Switching back to Travel Mode.");
+        } else {
+            // Continue avoidance behavior
+            Serial.println("Avoiding Obstacle...");
+        }
+    }
+
     delay(5000);
 }
 

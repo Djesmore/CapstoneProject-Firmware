@@ -2,10 +2,19 @@
 #include "decisions.h"
 #include "ultrasonic.h"
 #include "motor_control.h"
-#include "compass.h"
+#include "decisions.h"
 
-void makeDecision() {
-    // Code to process sensor data and make decisions
-    // For example, implement collision avoidance logic here
-    // Use motor control functions to act on decisions
+Decisions::Decisions(UltrasonicSensor& frontSensor, float obstacleThreshold)
+    : frontSensor(frontSensor), obstacleThreshold(obstacleThreshold) {}
+
+bool Decisions::avoidObstacle() {
+    // Read distance from the front ultrasonic sensor
+    float frontDistance = frontSensor.readDistance();
+
+    // Check if the front distance is less than the obstacle threshold
+    if (frontDistance < obstacleThreshold) {
+        return true;  // An obstacle is too close
+    } else {
+        return false; // No obstacle is too close
+    }
 }

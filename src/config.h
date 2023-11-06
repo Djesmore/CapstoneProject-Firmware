@@ -4,7 +4,7 @@
 
 // Define other pins, constants, and settings here
 
-//Speed of Robot (SoR)
+//Speed of Robot (SoR) in cm/s
 const float sor = 23.37;
 
 // Define the pins for the four ultrasonic sensors
