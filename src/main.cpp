@@ -171,12 +171,13 @@ void loop() {
     Serial.print(" Travel Time: ");
     Serial.println(calTravelTime);
 
-    if (frontDistance < 500){
+    if (frontDistance < 500 && frontDistance > 35){
+    Serial.println("Driving!");
     mtrctrl.moveForward();
     delay(calTravelTime);
     mtrctrl.fullStop();
     }else{
-        Serial.print("Distance too Far!");
+        Serial.print("Distance invalid!");
     }
     delay(5000);
 }
