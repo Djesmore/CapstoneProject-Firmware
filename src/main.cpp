@@ -22,6 +22,21 @@ UltrasonicSensor backSensor(backTrigPin, backEchoPin);
 //Create instance of the MotorControl class
 MotorControl mtrctrl(enA, in1, in2, enB, in3, in4, lsenA, lsin1, lsin2);
 
+//Create enumerator for robot states
+enum RobotState { PLANNING, DRIVING, OBSTACLE_DETECTED };
+//Set current (Initial) robot state to planning
+RobotState currentState = DRIVING;
+
+// Constants for measurements and calculations
+const float widthOfSnowplow = 30.00; // Width of the snowplow in centimeters (1 foot = 30.48 cm)
+const float obstacleThreshold = 0; // Obstacle distance threshold in centimeters
+
+// Variables for measurements and navigation
+float frontDistance; // Variable to store front distance measurement
+float leftDistance; // Variable to store left distance measurement
+bool obstacleDetected = false; // Flag to track obstacle presence
+
+
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(9600);     //Initialize serial communication
@@ -35,6 +50,11 @@ void setup() {
 
     mtrctrl.initializeMotors(); //Initialize drive motors
     Serial.println("Initializing Drive Motors");
+
+    int x = frontSensor.readDistance();
+    int y = leftSensor.readDistance();
+    int z = rightSensor.readDistance();
+    int zz = backSensor.readDistance();
 
     //compass.initializeCompass(); //Initialize compass
 /*
@@ -61,124 +81,164 @@ Serial.print("test6");
     delay(3000);
 }
 
-void demoMode(){
+unsigned long startTime = 0; // Variable to store the start time of movement
+float elapsedTime; // Variable to store the elapsed time during movement
+
+void driveForSeconds(float seconds) {
+    startTime = millis();
+    elapsedTime = 0;
+    mtrctrl.moveForward(); // Start moving forward
     
-    //Turn on Pico's Onboard LED
-    digitalWrite(LED_BUILTIN, LOW); 
+    //Seconds variable here is the Drive Time
+    while (elapsedTime < seconds * 1000) {
+        float currentDistance = frontSensor.readDistance();
+        if (currentDistance <= obstacleThreshold) {
+            mtrctrl.fullStop();
+            unsigned long stopTime = millis();
+            Serial.println("Obstacle detected(dfs)!");
+            Serial.print("Obstacle distance: ");
+            Serial.print(currentDistance);
 
-    //*********************** Compass
-/*
-    int x, y, z;
-    compass.readCompass(x, y, z);
+            // Wait for obstacle clearance
+            while (currentDistance <= obstacleThreshold) {
+                delay(1000); // Check every second
+                currentDistance = frontSensor.readDistance();
+            }
 
-    Serial.print("x: ");
-    Serial.println(x);
-    Serial.print("y: ");
-    Serial.println(y);
-    Serial.print("z: ");
-    Serial.println(z);
+            // Update elapsed time considering the obstacle delay
+            elapsedTime += millis() - startTime;
 
-    float declinationAngle = (4.0 + (26.0 / 60.0)) / (180 / PI);
-    compass.setDeclinationAngle(declinationAngle);
-
-    sVector_t mag = compass.readRaw();
-
-    compass.getHeadingDegrees();
-
-    Serial.print("X:");
-    Serial.print(mag.XAxis);
-
-    Serial.print(" Y:");
-    Serial.print(mag.YAxis);
-
-    Serial.print(" Z:");
-    Serial.println(mag.ZAxis);
-
-    Serial.print("Degress = ");
-
-    Serial.println(mag.HeadingDegress);
-    delay(100);
-*/
-    //********************** Drive Motors
-    
-    mtrctrl.fullStop();
-    delay(2000);
-    mtrctrl.moveForward();
-    Serial.println("Motors Forward");
-    delay(5000); 
-    mtrctrl.fullStop();
-
-    delay(1500);
-
-    mtrctrl.moveBackward();
-    Serial.println("Motors Backwards");
-    delay(4000);
-    mtrctrl.fullStop();
-    delay(1000);
-    //46in 5s
-    //********************** Ultrasonic Sensors
-    //Read distances from the ultrasonic sensors
-    float frontDistance = frontSensor.readDistance();
-    delay(10);
-    float leftDistance = leftSensor.readDistance();
-    delay(10);
-    float rightDistance = rightSensor.readDistance();
-    delay(10);
-    float backDistance = backSensor.readDistance();
-    delay(10);
-
-    //Print the distances to the serial monitor
-    Serial.print("Front Distance: ");
-    Serial.print(frontDistance);
-    Serial.println(" cm");
-
-    Serial.print("Left Distance: ");
-    Serial.print(leftDistance);
-    Serial.println(" cm");
-
-    Serial.print("Right Distance: ");
-    Serial.print(rightDistance);
-    Serial.println(" cm");
-
-    Serial.print("Back Distance: ");
-    Serial.print(backDistance);
-    Serial.println(" cm");
-
-    //Turn off Pico's Onboard LED
-    digitalWrite(LED_BUILTIN, LOW);
-  
-    delay(1000);
-    delay(1000); 
-    delay(1000);
+            Serial.print("Resuming after obstacle. Remaining time: ");
+            Serial.println((seconds * 1000 - elapsedTime) / 1000);
+            
+            mtrctrl.moveForward(); // Resume movement after obstacle delay
+            startTime = millis();
+        }
+        elapsedTime = millis() - startTime;
+    }
+    mtrctrl.fullStop(); // Stop after the specified duration
 }
 
+void plowDriveway() {
+
+    // Preset distances for testing
+    // Read distances here
+    frontDistance = 100; // Preset front distance for testing
+    leftDistance = 120; // Preset left distance for testing
+    bool isLeftTurn = true;
+
+    Serial.print("Initial Front Distance: ");
+    Serial.println(frontDistance);
+    Serial.print("Initial left Distance: ");
+    Serial.println(leftDistance);
+
+    int numRows = int(leftDistance / widthOfSnowplow); // Conversion truncates decimal part
+    Serial.print("Initial Rows: ");
+    Serial.println(numRows);
+
+
+    //**** Logic for tracking rows****//
+    for (int row = 0; row < numRows; ++row) {
+        Serial.print("Remaining rows: ");
+        Serial.println(numRows - row);
+
+        // Calculate drive time based on front distance and robot speed
+        float timeToDrive = frontDistance / sor;
+        Serial.print("Driving forward for time: ");
+        Serial.println(timeToDrive);
+        driveForSeconds(timeToDrive); //sends drive time to the driveForSeconds function, which takes a float value in seconds 
+
+        /*
+        //**************************
+        // Unfinished "Small Push"
+        mtrctrl.moveForward();
+        delay(1000);
+        //Leadscrew up and down
+        delay(200);
+        mtrctrl.moveBackward();
+        delay(1000);
+        //**************************
+        */
+        float currentDistance = frontSensor.readDistance();
+        if (currentDistance <= obstacleThreshold) {
+            obstacleDetected = true;
+            mtrctrl.fullStop();
+            return;
+        }
+
+        if (isLeftTurn) {
+            Serial.println("Performing left turn...");
+            mtrctrl.turnLeft();
+            //needs same obstacle avoidance timing as driveForSeconds
+        } else {
+            Serial.println("Performing right turn...");
+            mtrctrl.turnRight();
+            //needs same obstacle avoidance timing as driveForSeconds
+        }
+        isLeftTurn = !isLeftTurn;
+
+        // Check for obstacles after the turn
+        delay(1000); // Give time for turn completion
+
+        float obstacleCheckAfterTurn = frontSensor.readDistance();
+        
+        if (obstacleCheckAfterTurn <= obstacleThreshold) {
+            obstacleDetected = true;
+            mtrctrl.fullStop();
+            return;
+        }
+    }
+}
 
 void loop() {
-    //Robot's main control logic goes here
+    //*****Test Code*******
 
-    //Read Distance and Drive to Distance
-
-    Serial.println("Reading front distance...");
-    float frontDistance = frontSensor.readDistance();
-
-    //Divide frontDistance by Speed of Robot (SOR), 23.37cm/s
-    float travelTime = frontDistance / sor;
-    float calTravelTime = (travelTime * 1000) - 250; // timing adjustment, arrive just before distance
-
-    Serial.print(" Travel Distance: ");
-    Serial.println(frontDistance);
-
-    Serial.print(" Travel Time: ");
-    Serial.println(calTravelTime);
-
-    if (frontDistance < 500 && frontDistance > 35){
-    Serial.println("Driving!");
-    //mtrctrl.moveForward();
-    delay(calTravelTime);
+    mtrctrl.moveForward();
+    delay(5000);
     mtrctrl.fullStop();
-    }else{
-        Serial.print("Distance invalid!");
-    }
-    delay(2000);
-}
+    delay(5000);
+    
+//*****************************************
+    switch (currentState) {
 
+        case DRIVING:
+            Serial.println("Beginning DRIVING mode...");
+            // Any initialization/setup before starting plowDriveway()
+
+            currentState = DRIVING;
+            startTime = millis(); // Start time after planning
+            plowDriveway();
+
+            Serial.println("Finished Plowing!");
+            Serial.println("Awaiting User Intervention...");
+
+            // Measure front and left distances
+            frontDistance = frontSensor.readDistance();
+            leftDistance = leftSensor.readDistance();
+
+            if (frontDistance <= obstacleThreshold) {
+                currentState = OBSTACLE_DETECTED;
+                Serial.println("Switching to OBSTACLE_DETECTED mode");
+            }
+
+            // Continue normal operations (driving, plowing)
+            // Check for other conditions if needed
+            break;
+
+        case OBSTACLE_DETECTED:
+            Serial.println("Obstacle Detected!");
+            float currentDistance = frontSensor.readDistance();
+
+            if (currentDistance > obstacleThreshold) {
+                // Obstacle removed, resume previous state (DRIVING)
+                currentState = DRIVING;
+                Serial.println("Switching back to DRIVING mode");
+            }
+
+            // Wait or perform specific actions related to the obstacle detection
+            // Ensure that operations can continue seamlessly after obstacle clearance
+            break;
+    }
+
+    // Other necessary operations or delays
+}
