@@ -92,6 +92,18 @@ void MotorControl::fullStop() {
 	digitalWrite(in4, LOW);
 }
 
+void MotorControl::endOfRowPush(){
+	analogWrite(enA, 255); // Set PWM
+    analogWrite(enB, 255); // Set PWM
+
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+	digitalWrite(in3, HIGH);
+	digitalWrite(in4, LOW);
+ 
+ 	delay(1000);
+}
+
 void MotorControl::leadscrewForward() {
 	analogWrite(lsenA, 255); // Set PWM
 

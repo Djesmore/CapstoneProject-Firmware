@@ -148,17 +148,10 @@ void plowDriveway() {
         Serial.println(timeToDrive);
         driveForSeconds(timeToDrive); //sends drive time to the driveForSeconds function, which takes a float value in seconds 
 
-        /*
-        //**************************
-        // Unfinished "Small Push"
-        mtrctrl.moveForward();
         delay(1000);
-        //Leadscrew up and down
-        delay(200);
-        mtrctrl.moveBackward();
+        mtrctrl.endOfRowPush();
         delay(1000);
-        //**************************
-        */
+
         float currentDistance = frontSensor.readDistance();
         if (currentDistance <= obstacleThreshold) {
             obstacleDetected = true;
