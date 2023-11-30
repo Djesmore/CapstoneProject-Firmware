@@ -5,17 +5,17 @@
 // Define other pins, constants, and settings here
 
 //Speed of Robot (SoR)
-const float sor = 23.37;
+const float sor = 18.288; //23.37
 
 // Define the pins for the four ultrasonic sensors
-const int frontTrigPin = 50;  // Front sensor Trig pin BLACK
-const int frontEchoPin = 51;  // Front sensor Echo pin BLACK
-const int leftTrigPin = 24;  // Left sensor Trig pin PINK
-const int leftEchoPin = 25;  // Left sensor Echo pin PINK
-const int rightTrigPin = 53;  // Right sensor Trig pin GREEN
-const int rightEchoPin = 52;  // Right sensor Echo pin GREEN
-const int backTrigPin = 22;  // Back sensor Trig pin PURPLE
-const int backEchoPin = 23;  // Back sensor Echo pin PURPLE
+const int frontTrigPin = 51;  // Front sensor Trig pin BLACK
+const int frontEchoPin = 50;  // Front sensor Echo pin BLACK
+const int leftTrigPin = 25;  // Left sensor Trig pin PINK
+const int leftEchoPin = 24;  // Left sensor Echo pin PINK
+const int rightTrigPin = 52;  // Right sensor Trig pin GREEN
+const int rightEchoPin = 53;  // Right sensor Echo pin GREEN
+const int backTrigPin = 23;  // Back sensor Trig pin PURPLE
+const int backEchoPin = 22;  // Back sensor Echo pin PURPLE
 
 // Drive Motor A
 const int enA = 8; //PWM 20
@@ -28,8 +28,8 @@ const int in3 = 11; //+++2
 const int in4 = 12; //---3
 
 // Leadscrew
-const int lsenA = 98; //PWM
-const int lsin1 = 99; //+++ 
-const int lsin2 = 97; //---
+const int lsenA = 7; //PWM
+const int lsin1 = 6; //+++ 
+const int lsin2 = 5; //---
 
 #endif

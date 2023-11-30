@@ -19,8 +19,8 @@ public:
     void turnRight();
 
     // Leadscrew Functions
-    void leadscrewForward();
-    void leadscrewBackward();
+    void plowUp();
+    void plowDown();
 
 private:
     // Pins for Motor A, B and Leadscrew

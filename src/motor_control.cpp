@@ -68,8 +68,11 @@ void MotorControl::turnLeft() {
 
     digitalWrite(in1, LOW);
 	digitalWrite(in2, HIGH);
+	
+	
 	digitalWrite(in3, HIGH);
 	digitalWrite(in4, LOW);
+	delay(2500);
 }
 
 void MotorControl::turnRight() {
@@ -92,14 +95,14 @@ void MotorControl::fullStop() {
 	digitalWrite(in4, LOW);
 }
 
-void MotorControl::leadscrewForward() {
+void MotorControl::plowUp() {
 	analogWrite(lsenA, 255); // Set PWM
 
 	digitalWrite(lsin1, HIGH); //+++
 	digitalWrite(lsin2, LOW); //---
 }
 
-void MotorControl::leadscrewBackward() {
+void MotorControl::plowDown() {
 	analogWrite(lsenA, 255); // Set PWM
 
 	digitalWrite(lsin1, LOW); //+++

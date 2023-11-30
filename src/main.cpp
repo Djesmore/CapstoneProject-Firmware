@@ -23,7 +23,7 @@ UltrasonicSensor backSensor(backTrigPin, backEchoPin);
 MotorControl mtrctrl(enA, in1, in2, enB, in3, in4, lsenA, lsin1, lsin2);
 
 //Create enumerator for robot states
-enum RobotState { PLANNING, DRIVING, OBSTACLE_DETECTED };
+enum RobotState { DRIVING, OBSTACLE_DETECTED };
 //Set current (Initial) robot state to planning
 RobotState currentState = DRIVING;
 
@@ -57,18 +57,14 @@ void setup() {
     int zz = backSensor.readDistance();
 
     //compass.initializeCompass(); //Initialize compass
-/*
-Serial.print("test3");
-    Serial.println("Initialize QMC5883");
+    compass.begin();
     compass.setRange(QMC5883_RANGE_2GA);
-Serial.print("test4");
     Serial.print("compass range is:");
     Serial.println(compass.getRange());
-Serial.print("test5");
+
     compass.setMeasurementMode(QMC5883_CONTINOUS);
     Serial.print("compass measurement mode is:");
     Serial.println(compass.getMeasurementMode());
-Serial.print("test6");
 
     compass.setDataRate(QMC5883_DATARATE_50HZ);
     Serial.print("compass data rate is:");
@@ -77,8 +73,14 @@ Serial.print("test6");
     compass.setSamples(QMC5883_SAMPLES_8);
     Serial.print("compass samples is:");
     Serial.println(compass.getSamples());
-*/
-    delay(3000);
+    float declinationAngle = (4.0 + (26.0 / 60.0)) / (180 / PI);
+    compass.setDeclinationAngle(declinationAngle);
+    sVector_t mag = compass.readRaw();
+    compass.getHeadingDegrees();
+    Serial.print("Initial Heading: Degress = ");
+    Serial.println(mag.HeadingDegress);
+
+
 }
 
 unsigned long startTime = 0; // Variable to store the start time of movement
@@ -136,7 +138,6 @@ void plowDriveway() {
     Serial.print("Initial Rows: ");
     Serial.println(numRows);
 
-
     //**** Logic for tracking rows****//
     for (int row = 0; row < numRows; ++row) {
         Serial.print("Remaining rows: ");
@@ -159,6 +160,7 @@ void plowDriveway() {
         delay(1000);
         //**************************
         */
+
         float currentDistance = frontSensor.readDistance();
         if (currentDistance <= obstacleThreshold) {
             obstacleDetected = true;
@@ -191,13 +193,8 @@ void plowDriveway() {
 }
 
 void loop() {
-    //*****Test Code*******
+//*****Test Code*******
 
-    mtrctrl.moveForward();
-    delay(5000);
-    mtrctrl.fullStop();
-    delay(5000);
-    
 //*****************************************
     switch (currentState) {
 
@@ -211,6 +208,8 @@ void loop() {
 
             Serial.println("Finished Plowing!");
             Serial.println("Awaiting User Intervention...");
+
+            delay(100000);
 
             // Measure front and left distances
             frontDistance = frontSensor.readDistance();
