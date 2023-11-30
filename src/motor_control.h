@@ -11,12 +11,16 @@ public:
     // Stop Function
     void fullStop();
 
+    void endOfRowPush();
+
     // Drive Motor Functions             
     void initializeMotors();
     void moveForward();
     void moveBackward();
     void turnLeft();
     void turnRight();
+
+  
 
     // Leadscrew Functions
     void plowUp();
