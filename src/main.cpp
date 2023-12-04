@@ -56,6 +56,7 @@ void setup() {
     int z = rightSensor.readDistance();
     int zz = backSensor.readDistance();
 
+/*
     //compass.initializeCompass(); //Initialize compass
     compass.begin();
     compass.setRange(QMC5883_RANGE_2GA);
@@ -79,14 +80,28 @@ void setup() {
     compass.getHeadingDegrees();
     Serial.print("Initial Heading: Degress = ");
     Serial.println(mag.HeadingDegress);
-
+*/
 
 }
 
 unsigned long startTime = 0; // Variable to store the start time of movement
 float elapsedTime; // Variable to store the elapsed time during movement
 
+void obstacleCheck(){
+        float obstacleCheckAfterTurn = frontSensor.readDistance();
+
+        if (obstacleCheckAfterTurn <= obstacleThreshold) {
+
+            Serial.print("Obstacle detected!(OC)");
+            obstacleDetected = true;
+            mtrctrl.fullStop();
+            return;
+        }
+}
+
 void driveForSeconds(float seconds) {
+    Serial.print("Entering DFS...");
+
     startTime = millis();
     elapsedTime = 0;
     mtrctrl.moveForward(); // Start moving forward
@@ -94,11 +109,13 @@ void driveForSeconds(float seconds) {
     //Seconds variable here is the Drive Time
     while (elapsedTime < seconds * 1000) {
         float currentDistance = frontSensor.readDistance();
+        Serial.println("DFS Check...");
+
         if (currentDistance <= obstacleThreshold) {
             mtrctrl.fullStop();
             unsigned long stopTime = millis();
             Serial.println("Obstacle detected(dfs)!");
-            Serial.print("Obstacle distance: ");
+            Serial.println("Obstacle distance: ");
             Serial.print(currentDistance);
 
             // Wait for obstacle clearance
@@ -110,7 +127,7 @@ void driveForSeconds(float seconds) {
             // Update elapsed time considering the obstacle delay
             elapsedTime += millis() - startTime;
 
-            Serial.print("Resuming after obstacle. Remaining time: ");
+            Serial.println("Resuming after obstacle. Remaining time: ");
             Serial.println((seconds * 1000 - elapsedTime) / 1000);
             
             mtrctrl.moveForward(); // Resume movement after obstacle delay
@@ -150,25 +167,34 @@ void plowDriveway() {
         driveForSeconds(timeToDrive); //sends drive time to the driveForSeconds function, which takes a float value in seconds 
 
         delay(1000);
+        Serial.println("Small Push!");
         mtrctrl.endOfRowPush();
         delay(1000);
         //**************************
         
+        Serial.println("Checking for Obstacles before turn...");
 
         float currentDistance = frontSensor.readDistance();
         if (currentDistance <= obstacleThreshold) {
+            Serial.print("Obstacle detected before turn");
             obstacleDetected = true;
             mtrctrl.fullStop();
             return;
         }
 
+        Serial.print("Path is Clear!");
+
         if (isLeftTurn) {
             Serial.println("Performing left turn...");
             mtrctrl.turnLeft();
+            mtrctrl.fullStop();
+            delay(1000);
             //needs same obstacle avoidance timing as driveForSeconds
         } else {
             Serial.println("Performing right turn...");
             mtrctrl.turnRight();
+            mtrctrl.fullStop();
+            delay(1000);
             //needs same obstacle avoidance timing as driveForSeconds
         }
         isLeftTurn = !isLeftTurn;
@@ -176,13 +202,16 @@ void plowDriveway() {
         // Check for obstacles after the turn
         delay(1000); // Give time for turn completion
 
+        Serial.print("Checking for Obstacles after turn...");
+
         float obstacleCheckAfterTurn = frontSensor.readDistance();
-        
         if (obstacleCheckAfterTurn <= obstacleThreshold) {
             obstacleDetected = true;
             mtrctrl.fullStop();
             return;
         }
+
+        Serial.print("Path is Clear, begin next row!");
     }
 }
 
