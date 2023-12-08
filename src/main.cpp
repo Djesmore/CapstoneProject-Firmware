@@ -5,13 +5,12 @@
 #include <motor_control.h>
 #include <wire.h>
 #include <DFRobot_QMC5883.h>
-//#include <decisions.h>
 
 //Robot speed is 23.37cm/s on carpet
 
 //Create instance of Compass Class
 //Compass compass;
-DFRobot_QMC5883 compass(&Wire, /*I2C addr*/QMC5883_ADDRESS);
+//DFRobot_QMC5883 compass(&Wire, /*I2C addr*/QMC5883_ADDRESS);
 
 //Create instances of the UltrasonicSensor class for each sensor
 UltrasonicSensor frontSensor(frontTrigPin, frontEchoPin);
@@ -27,15 +26,17 @@ enum RobotState { DRIVING, OBSTACLE_DETECTED };
 //Set current (Initial) robot state to planning
 RobotState currentState = DRIVING;
 
-// Constants for measurements and calculations
-const float widthOfSnowplow = 30.00; // Width of the snowplow in centimeters (1 foot = 30.48 cm)
-const float obstacleThreshold = 0; // Obstacle distance threshold in centimeters
-
 // Variables for measurements and navigation
 float frontDistance; // Variable to store front distance measurement
 float leftDistance; // Variable to store left distance measurement
 bool obstacleDetected = false; // Flag to track obstacle presence
+unsigned long startTime = 0; // Variable to store the start time of movement
+float elapsedTime; // Variable to store the elapsed time during movement
 
+const int NUM_READINGS = 5;
+float readings[NUM_READINGS];
+int index = 0;
+int minDistance = 20;
 
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
@@ -50,11 +51,6 @@ void setup() {
 
     mtrctrl.initializeMotors(); //Initialize drive motors
     Serial.println("Initializing Drive Motors");
-
-    int x = frontSensor.readDistance();
-    int y = leftSensor.readDistance();
-    int z = rightSensor.readDistance();
-    int zz = backSensor.readDistance();
 
 /*
     //compass.initializeCompass(); //Initialize compass
@@ -81,22 +77,38 @@ void setup() {
     Serial.print("Initial Heading: Degress = ");
     Serial.println(mag.HeadingDegress);
 */
-
 }
 
-unsigned long startTime = 0; // Variable to store the start time of movement
-float elapsedTime; // Variable to store the elapsed time during movement
+void obstacleCheck() {
+    float sum = 0;
+    float average = 0;
 
-void obstacleCheck(){
-        float obstacleCheckAfterTurn = frontSensor.readDistance();
+    // Collect readings
+    readings[index] = frontSensor.readDistance();
+    index = (index + 1) % NUM_READINGS;
 
-        if (obstacleCheckAfterTurn <= obstacleThreshold) {
+    // Calculate sum of readings
+    for (int i = 0; i < NUM_READINGS; i++) {
+        sum += readings[i];
+    }
 
-            Serial.print("Obstacle detected!(OC)");
-            obstacleDetected = true;
-            mtrctrl.fullStop();
-            return;
-        }
+    // Calculate average
+    average = sum / NUM_READINGS;
+
+    // Check if the average reading is within a valid range
+    if (average <= minDistance) {
+        Serial.println("Invalid or too close/far reading!");
+        Serial.println(" Distance: ");
+        Serial.println(average);
+        return;
+    }
+
+    // Proceed if the average reading is within the valid range
+    if (average <= obstacleThreshold) {
+        Serial.println("Obstacle detected!");
+        obstacleDetected = true;
+        mtrctrl.fullStop();
+    }
 }
 
 void driveForSeconds(float seconds) {
@@ -108,12 +120,12 @@ void driveForSeconds(float seconds) {
     
     //Seconds variable here is the Drive Time
     while (elapsedTime < seconds * 1000) {
-        float currentDistance = frontSensor.readDistance();
-        Serial.println("DFS Check...");
-
-        if (currentDistance <= obstacleThreshold) {
+        obstacleCheck();
+        if (obstacleDetected == true) {
             mtrctrl.fullStop();
+            float currentDistance = frontSensor.readDistance();
             unsigned long stopTime = millis();
+
             Serial.println("Obstacle detected(dfs)!");
             Serial.println("Obstacle distance: ");
             Serial.print(currentDistance);
@@ -125,7 +137,7 @@ void driveForSeconds(float seconds) {
             }
 
             // Update elapsed time considering the obstacle delay
-            elapsedTime += millis() - startTime;
+            elapsedTime += millis() - stopTime;
 
             Serial.println("Resuming after obstacle. Remaining time: ");
             Serial.println((seconds * 1000 - elapsedTime) / 1000);
@@ -136,14 +148,18 @@ void driveForSeconds(float seconds) {
         elapsedTime = millis() - startTime;
     }
     mtrctrl.fullStop(); // Stop after the specified duration
+    Serial.print("Exiting DFS...");
 }
 
 void plowDriveway() {
 
     // Preset distances for testing
     // Read distances here
-    frontDistance = 100; // Preset front distance for testing
-    leftDistance = 120; // Preset left distance for testing
+    //frontDistance = frontSensor.readDistance();
+    //leftDistance = leftSensor.readDistance();
+
+    frontDistance = 121; // Preset front distance for testing
+    leftDistance = 220; // Preset left distance for testing
     bool isLeftTurn = true;
 
     Serial.print("Initial Front Distance: ");
@@ -154,6 +170,8 @@ void plowDriveway() {
     int numRows = int(leftDistance / widthOfSnowplow); // Conversion truncates decimal part
     Serial.print("Initial Rows: ");
     Serial.println(numRows);
+
+    obstacleCheck();
 
     //**** Logic for tracking rows****//
     for (int row = 0; row < numRows; ++row) {
@@ -167,21 +185,15 @@ void plowDriveway() {
         driveForSeconds(timeToDrive); //sends drive time to the driveForSeconds function, which takes a float value in seconds 
 
         delay(1000);
+
+        obstacleCheck();
         Serial.println("Small Push!");
         mtrctrl.endOfRowPush();
+
         delay(1000);
-        //**************************
-        
+
         Serial.println("Checking for Obstacles before turn...");
-
-        float currentDistance = frontSensor.readDistance();
-        if (currentDistance <= obstacleThreshold) {
-            Serial.print("Obstacle detected before turn");
-            obstacleDetected = true;
-            mtrctrl.fullStop();
-            return;
-        }
-
+        obstacleCheck();
         Serial.print("Path is Clear!");
 
         if (isLeftTurn) {
@@ -189,30 +201,46 @@ void plowDriveway() {
             mtrctrl.turnLeft();
             mtrctrl.fullStop();
             delay(1000);
-            //needs same obstacle avoidance timing as driveForSeconds
         } else {
             Serial.println("Performing right turn...");
             mtrctrl.turnRight();
             mtrctrl.fullStop();
             delay(1000);
-            //needs same obstacle avoidance timing as driveForSeconds
         }
         isLeftTurn = !isLeftTurn;
 
         // Check for obstacles after the turn
         delay(1000); // Give time for turn completion
-
         Serial.print("Checking for Obstacles after turn...");
-
-        float obstacleCheckAfterTurn = frontSensor.readDistance();
-        if (obstacleCheckAfterTurn <= obstacleThreshold) {
-            obstacleDetected = true;
-            mtrctrl.fullStop();
-            return;
-        }
-
+        obstacleCheck();
         Serial.print("Path is Clear, begin next row!");
     }
+}
+
+void demoMode(){
+
+    mtrctrl.fullStop();
+    mtrctrl.moveForward();
+    delay(2000); // 2s
+    mtrctrl.fullStop();
+    delay(1000); //1s
+    mtrctrl.moveBackward();
+    delay(2000);
+    mtrctrl.fullStop();
+
+    mtrctrl.plowUp();
+    delay(2000);
+    mtrctrl.fullStop();
+    delay(1000);
+    mtrctrl.plowDown();
+
+    mtrctrl.fullStop();
+
+    mtrctrl.demoTurning();
+
+    mtrctrl.fullStop();
+    mtrctrl.fullStop();
+   
 }
 
 void loop() {
@@ -232,19 +260,7 @@ void loop() {
             Serial.println("Finished Plowing!");
             Serial.println("Awaiting User Intervention...");
 
-            delay(100000);
-
-            // Measure front and left distances
-            frontDistance = frontSensor.readDistance();
-            leftDistance = leftSensor.readDistance();
-
-            if (frontDistance <= obstacleThreshold) {
-                currentState = OBSTACLE_DETECTED;
-                Serial.println("Switching to OBSTACLE_DETECTED mode");
-            }
-
-            // Continue normal operations (driving, plowing)
-            // Check for other conditions if needed
+            delay(100000000000); // Long delay for end of plowing
             break;
 
         case OBSTACLE_DETECTED:
@@ -256,11 +272,6 @@ void loop() {
                 currentState = DRIVING;
                 Serial.println("Switching back to DRIVING mode");
             }
-
-            // Wait or perform specific actions related to the obstacle detection
-            // Ensure that operations can continue seamlessly after obstacle clearance
             break;
     }
-
-    // Other necessary operations or delays
 }

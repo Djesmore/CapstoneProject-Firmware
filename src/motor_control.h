@@ -11,7 +11,11 @@ public:
     // Stop Function
     void fullStop();
     
+    //Raises and lowers the plow after each row
     void endOfRowPush();
+
+    // Demonstrates turning ability
+    void demoTurning();
 
     // Drive Motor Functions             
     void initializeMotors();
@@ -19,8 +23,6 @@ public:
     void moveBackward();
     void turnLeft();
     void turnRight();
-
-  
 
     // Leadscrew Functions
     void plowUp();

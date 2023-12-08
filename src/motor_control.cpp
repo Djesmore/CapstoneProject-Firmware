@@ -43,13 +43,15 @@ void MotorControl::initializeMotors() {
 }
 
 void MotorControl::moveForward() {
-    analogWrite(enA, 215); // Set PWM **Speed is 23.37cm/s
-    analogWrite(enB, 255); // Set PWM **Speed is 23.37cm/s
-
-    digitalWrite(in1, HIGH);
-	digitalWrite(in2, LOW);
+    analogWrite(enA, 220); // LEFT Set PWM **Speed is 23.37cm/s 
+    analogWrite(enB, 255); // RIGHT Set PWM **Speed is 23.37cm/s
+	delay(1000);
 	digitalWrite(in3, HIGH);
 	digitalWrite(in4, LOW);
+	delay(50);
+    digitalWrite(in1, HIGH);
+	digitalWrite(in2, LOW);
+
 }
 
 void MotorControl::moveBackward() {
@@ -65,14 +67,14 @@ void MotorControl::moveBackward() {
 //2x 90DEG TURNS
 void MotorControl::turnLeft() {
     analogWrite(enA, 0);
-    analogWrite(enB, 255);
+    analogWrite(enB, 245);
 
     digitalWrite(in1, HIGH);
 	digitalWrite(in2, LOW);
 	
 	digitalWrite(in3, HIGH);
 	digitalWrite(in4, LOW);
-	delay(1600);
+	delay(1500);
 
 	fullStop();
 	delay(2000);
@@ -85,9 +87,7 @@ void MotorControl::turnLeft() {
 	
 	digitalWrite(in3, HIGH);
 	digitalWrite(in4, LOW);
-	delay(1625);
-
-
+	delay(1500);
 }
 
 void MotorControl::turnRight() {
@@ -112,7 +112,10 @@ void MotorControl::turnRight() {
 	
 	digitalWrite(in3, HIGH);
 	digitalWrite(in4, LOW);
-	delay(1625);
+	delay(1450);
+
+	fullStop();
+	delay(1000);
 
 }
 
@@ -158,7 +161,7 @@ void MotorControl::endOfRowPush() {
 
 	//Raise plow and stop
 	plowUp();
-	delay(3000);
+	delay(3500);
 	fullStop();
 
 	//Move backward 2s then stop
@@ -168,8 +171,30 @@ void MotorControl::endOfRowPush() {
 
 	//lower plow and stop
 	plowDown();
-	delay(3000);
+	delay(3500);
 	fullStop();
+	fullStop();
+	fullStop();
+}
+
+void MotorControl::demoTurning(){
+	analogWrite(enA, 215); // Set PWM **Speed is 23.37cm/s
+    analogWrite(enB, 255); // Set PWM **Speed is 23.37cm/s
+
+    digitalWrite(in1, LOW);
+	digitalWrite(in2, HIGH);
+	digitalWrite(in3, HIGH);
+	digitalWrite(in4, LOW);
+
+	delay(1500);
+
+	digitalWrite(in1, HIGH);
+	digitalWrite(in2, LOW);
+	digitalWrite(in3, LOW);
+	digitalWrite(in4, HIGH);
+
+	delay(1500);
+
 	fullStop();
 	fullStop();
 }

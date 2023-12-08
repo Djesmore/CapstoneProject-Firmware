@@ -4,6 +4,12 @@
 
 // Define other pins, constants, and settings here
 
+// Width of the snowplow in centimeters (1 foot = 30.48 cm)
+const float widthOfSnowplow = 30.00; 
+
+// Obstacle distance threshold in centimeters
+const float obstacleThreshold = 20; 
+
 //Speed of Robot (SoR)
 const float sor = 18.288; //23.37
 
